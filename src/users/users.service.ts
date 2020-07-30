@@ -13,7 +13,7 @@ export class UsersService {
         private usersRepository:Repository<User>
     ) {}
 
-    async getByEmail(email:string) {
+    async getByEmail(email:string):Promise<User> {
         const user = this.usersRepository.findOne({email});
         if(user) {
             return user;
@@ -21,13 +21,13 @@ export class UsersService {
         throw new HttpException("User with this email doesnt exist",HttpStatus.NOT_FOUND);
     }
 
-    async create(userData: CreateUserDto){
+    async create(userData: CreateUserDto):Promise<User>{
         const newUser = await this.usersRepository.create(userData);
         await this.usersRepository.save(newUser);
         return newUser;
     }
 
-    async getById(id: number) {
+    async getById(id: number):Promise<User> {
         const user = await this.usersRepository.findOne({ id });
         if (user) {
           return user;

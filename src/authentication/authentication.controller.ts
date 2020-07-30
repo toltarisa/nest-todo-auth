@@ -4,6 +4,7 @@ import RegisterDto from './dto/register.dto';
 import RequestWithUser from './requestWithUser.interface';
 import { LocalAuthenticationGuard } from './localAuthentication.guard';
 import JwtAuthenticationGuard from './jwt-authentication.guard';
+import User from 'src/users/users.entity';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -13,21 +14,21 @@ export class AuthenticationController {
 
   @UseGuards(JwtAuthenticationGuard)
   @Get()
-  authenticate(@Req() request: RequestWithUser) {
+  authenticate(@Req() request: RequestWithUser):User {
     const user = request.user;
     user.password = undefined;
     return user;
   }
  
   @Post('register')
-  async register(@Body() registrationData: RegisterDto) {
+  async register(@Body() registrationData: RegisterDto):Promise<RegisterDto> {
     return this.authenticationService.register(registrationData);
   }
  
   @HttpCode(200)
   @UseGuards(LocalAuthenticationGuard)
   @Post('login_check')
-  async logIn(@Req() request: RequestWithUser,@Res() response: any) {
+  async logIn(@Req() request: RequestWithUser,@Res() response: any):Promise<User> {
     const {user} = request;
     const cookie = this.authenticationService.getCookieWithJwtToken(user.id);
     response.setHeader('Set-Cookie', cookie);
